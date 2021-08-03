@@ -1,0 +1,13 @@
+<form action="{% url 'search_item_form' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+
+{% for item in items %}
+<div>Item
+<div style="margin-left: 50px">Name: {{item.title_item}}</div>
+<div style="margin-left: 50px">Desc: {{item.description_item}}</div>
+<div style="margin-left: 50px">Categories: {% for cat in item.categories %} {{cat.name_category}}; {% endfor %} </div>
+</div>
+{% endfor %}

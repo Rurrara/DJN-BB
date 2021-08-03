@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+
+  elasticsearch:
+    image: elasticsearch:7.8.1
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  web:
+    container_name: djn_cmps
+    restart: always
+    build: ./djn
+    expose:
+      - "8000"
+    depends_on:
+      - postgres
+      - elasticsearch
+    links:
+      - postgres:postgres
+      - elasticsearch:elasticsearch
+    volumes:
+      - web-django:/usr/src/app
+      - web-static:/usr/src/app/static
+    environment:
+      DEBUG: 'true'
+    command: /usr/local/bin/gunicorn djn_bb.wsgi:application -w 2 -b :8000
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+    volumes:
+      - web-static:/www/static
+    links:
+      - web:web
+      - elasticsearch:elasticsearch
+      
+
+  postgres:
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=djn_db
+      - POSTGRES_USER=djn_db_user
+      - POSTGRES_PASSWORD=passw0rd
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+
+
+volumes:
+  web-django:
+  web-static:
+  pgdata:

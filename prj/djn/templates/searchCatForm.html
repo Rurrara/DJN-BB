@@ -1,0 +1,12 @@
+<form action="{% url 'search_cat_form' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+
+{% for hit in hits %}
+<div>Category
+<div style="margin-left: 50px">Name: {{hit.name_category}}</div>
+<div style="margin-left: 50px">Desc: {{hit.description_category}}</div>
+</div>
+{% endfor %}
